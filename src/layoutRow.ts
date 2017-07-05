@@ -8,12 +8,25 @@ export class LayoutRow {
     private el: EntityLayout;
     
     constructor(el: EntityLayout) {
+        let self = this;
         this.div = document.createElement("div");
         this.div.className = "row";
+
+        // Button Add Columns
+        let div_addColumn_btn = document.createElement("div");
+        div_addColumn_btn.className = "button-add-column";
+        div_addColumn_btn.addEventListener("click", function(){
+            self.addColumn();
+        });
+        this.div.appendChild(div_addColumn_btn);
         this.columns = new Array<LayoutColumn>();
         this.el = el;
         // Per defecte tenim una columna
         this.addColumn();
+    }
+
+    getColumn(){
+        return this.columns;
     }
 
     addColumn() {

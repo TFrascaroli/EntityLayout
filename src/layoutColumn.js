@@ -4,9 +4,24 @@ var LayoutColumn = (function () {
     function LayoutColumn(el) {
         var self = this;
         this.div = document.createElement("div");
+        // Dimensions flex
+        var div_dim = document.createElement("input");
+        div_dim.className = "dim-col";
+        div_dim.type = "number";
+        div_dim.max = "5";
+        div_dim.min = "1";
+        div_dim.value = "1";
+        div_dim.addEventListener("change", function () {
+            var rawVal = parseInt(div_dim.value, 10), val = (10 + rawVal).toString();
+            self.dim = rawVal;
+            self.div.style.flex = val + " " + val + " auto";
+        });
+        this.div.appendChild(div_dim);
         this.div.className = "column";
         this.el = el;
-        this.div.addEventListener("click", function () {
+        this.div.addEventListener("click", function (evt) {
+            if (evt.target !== self.div)
+                return;
             self.el.openPopup(self);
         });
     }
@@ -18,9 +33,11 @@ var LayoutColumn = (function () {
     };
     LayoutColumn.prototype.deleteEntity = function () {
         this.ent = null;
+        this.div.textContent = "";
     };
     LayoutColumn.prototype.setEntity = function (ent) {
         this.ent = ent;
+        this.div.textContent = ent.id.toString();
     };
     LayoutColumn.prototype.render = function () {
         var div_rep = document.createElement("div");
@@ -29,7 +46,7 @@ var LayoutColumn = (function () {
         div_rep.className = "flexChild sledge-hammer";
         div_rep.appendChild(div_inner);
         div_inner.appendChild(this.ent.render());
-        // div_rep.style.flex = this.dim + " " + this.dim + " " +  "0px";
+        div_rep.style.flex = this.dim + " " + this.dim + " " + "0px";
         return div_rep;
     };
     ;

@@ -3,13 +3,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var layoutColumn_1 = require("./layoutColumn");
 var LayoutRow = (function () {
     function LayoutRow(el) {
+        var self = this;
         this.div = document.createElement("div");
         this.div.className = "row";
+        // Button Add Columns
+        var div_addColumn_btn = document.createElement("div");
+        div_addColumn_btn.className = "button-add-column";
+        div_addColumn_btn.addEventListener("click", function () {
+            self.addColumn();
+        });
+        this.div.appendChild(div_addColumn_btn);
         this.columns = new Array();
         this.el = el;
         // Per defecte tenim una columna
         this.addColumn();
     }
+    LayoutRow.prototype.getColumn = function () {
+        return this.columns;
+    };
     LayoutRow.prototype.addColumn = function () {
         var c = new layoutColumn_1.LayoutColumn(this.el);
         this.columns.push(c);
