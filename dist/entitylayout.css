@@ -6,6 +6,7 @@
   background-color: rgba(200, 200, 200, 0.3);
 }
 .entity-layout .row {
+  position: relative;
   border: 4px dashed #bebeba;
   margin: 5px 0;
   padding: 4px;
@@ -16,8 +17,61 @@
   -webkit-flex-direction: row;
   flex-direction: row;
 }
+.entity-layout .row .button-remove-row {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid rgba(100, 100, 100, 0.8);
+  position: absolute;
+  right: -7px;
+  top: 68px;
+  transform: translateY(-1px);
+  cursor: pointer;
+  background-color: #FB4D67;
+  display: block;
+  opacity: 0;
+  transition: opacity 125ms ease-in-out;
+  z-index: 9;
+}
+.entity-layout .row .button-remove-row:before {
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  display: block;
+  z-index: 9;
+  text-align: center;
+}
+.entity-layout .row .button-add-column {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid rgba(100, 100, 100, 0.8);
+  position: absolute;
+  right: -8px;
+  top: 36px;
+  transform: translateY(-8px);
+  cursor: pointer;
+  background-color: #4D98FB;
+  display: block;
+  opacity: 0;
+  transition: opacity 250ms ease-in-out;
+}
+.entity-layout .row .button-add-column:before {
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  text-align: center;
+  content: "+";
+  color: black;
+  display: block;
+}
+.entity-layout .row:hover .button-add-column,
+.entity-layout .row:hover .button-remove-row {
+  opacity: 1;
+}
 .entity-layout .row .column {
-  flex: 1 1 auto;
+  position: relative;
+  flex: 11 11 auto;
   padding: 3px;
   text-align: center;
   color: #bebeba;
@@ -26,6 +80,76 @@
 }
 .entity-layout .row .column:not(:last-child) {
   border-right: 2px dashed #bebeba;
+}
+.entity-layout .row .column .content-column {
+  position: absolute;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+  top: 30%;
+  transform: translateY(30%);
+}
+.entity-layout .row .column .button-remove-column {
+  width: 10px;
+  display: block;
+  opacity: 0;
+  transition: opacity 250ms ease-in-out;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(100, 100, 100, 0.8);
+  position: absolute;
+  right: 2px;
+  top: -1px;
+  transform: translateY(-1px);
+  cursor: pointer;
+  background-color: #FB4D67;
+  z-index: 9;
+}
+.entity-layout .row .column .button-remove-column:before {
+  width: 10px;
+  height: 10px;
+  line-height: 10px;
+  display: block;
+  z-index: 9;
+  text-align: center;
+}
+.entity-layout .row .column:hover .button-remove-column {
+  opacity: 1;
+}
+.entity-layout .content-rows {
+  width: 100%;
+  position: relative;
+}
+.entity-layout .button-add-row {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(100, 100, 100, 0.8);
+  position: absolute;
+  left: 50%;
+  bottom: -15px;
+  transform: translateX(-50%);
+  cursor: pointer;
+  background-color: #4DCA66;
+  display: block;
+  z-index: 9;
+}
+.entity-layout .button-add-row:before {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+  z-index: 9;
+  text-align: center;
+  content: "+";
+  color: black;
+}
+.entity-layout .dim-col {
+  position: absolute;
+  width: 30px;
+  height: 16px;
+  top: 15px;
+  right: 18px;
+  transform: translateY(-15px);
 }
 .EL-popup {
   display: none;
@@ -37,6 +161,7 @@
 }
 .EL-popup.visible {
   display: block;
+  z-index: 9;
 }
 .EL-popup .layer {
   background-color: rgba(200, 200, 200, 0.3);
@@ -66,4 +191,24 @@
   padding: 10px;
   color: #dedede;
   background-color: #464646;
+}
+.EL-popup .wraper .selectArea {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.EL-popup .wraper .selectArea .options-entity {
+  color: #ddd;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 1.1em;
+}
+.EL-popup .wraper .selectArea .options-entity:hover {
+  background-color: #464646;
+}
+.EL-popup .wraper .selectArea .delete {
+  font-style: italic;
+}
+.EL-popup .wraper .selectArea .delete:hover {
+  background-color: #CA4D4D;
 }

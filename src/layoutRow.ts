@@ -1,6 +1,11 @@
 import {LayoutColumn} from "./layoutColumn";
 import {EntityLayout} from "./entityLayout";
 
+interface ILayoutRow {
+    columns: Array<LayoutColumn>;
+}
+
+
 export class LayoutRow {
     
     private columns: Array<LayoutColumn>;
@@ -16,9 +21,34 @@ export class LayoutRow {
         let div_addColumn_btn = document.createElement("div");
         div_addColumn_btn.className = "button-add-column";
         div_addColumn_btn.addEventListener("click", function(){
-            self.addColumn();
+            let childrensRows = self.div.children;
+            let count = 0;
+            for (let i = 0; i < childrensRows.length; i++) {
+                if (childrensRows[i].className === "column") {
+                    count += 1;
+                }
+            }
+            if (count < el.getNumberColumns()) {
+                self.addColumn();
+            }
         });
         this.div.appendChild(div_addColumn_btn);
+
+        // Button Delete rows
+        let remove_row_btn = document.createElement("div");
+        remove_row_btn.className = "button-remove-row";
+        remove_row_btn.addEventListener("click",function(){
+            let columns = self.getColumn();
+            columns.forEach(c =>{
+                if (c.getEntity()) {
+                    el.getEntities().push(c.getEntity());
+                    
+                }
+            })
+            self.div.remove();
+            remove_row_btn.remove();
+        });
+        this.div.appendChild(remove_row_btn);
         this.columns = new Array<LayoutColumn>();
         this.el = el;
         // Per defecte tenim una columna
@@ -53,4 +83,21 @@ export class LayoutRow {
         });
         return div_row;
     };
+
+    serializer() {
+        let propCol = [];
+
+        this.columns.forEach(c =>{
+                return propCol.push(c.serializer());
+        });
+
+        let prop = {
+            columns: propCol
+        }
+        return prop;
+        
+    }
+    parser(object: ILayoutRow) {
+        this.columns = object.columns;
+    }
 }

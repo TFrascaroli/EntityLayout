@@ -2,11 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var layoutRow_1 = require("./layoutRow");
 var EntityLayout = (function () {
-    function EntityLayout() {
+    function EntityLayout(numberColumns) {
         var self = this;
         this.availableEntities = [];
         this.rows = [];
         this.currentColumn = null;
+        this.numberColumns = numberColumns;
         this.div = document.createElement("div");
         this.div.className = "entity-layout";
         this.div_container = document.createElement("div");
@@ -111,6 +112,25 @@ var EntityLayout = (function () {
         return "<html><head><style type=\"text/css\"><\/style><\/head><body>" + div_rows.outerHTML + "<\/body><\/html>";
     };
     ;
+    EntityLayout.prototype.serializer = function () {
+        var rows = [];
+        this.rows.forEach(function (r) {
+            return rows.push(r.serializer());
+        });
+        var objectJSON = {
+            rows: rows
+        };
+        return objectJSON;
+    };
+    EntityLayout.prototype.parser = function (object) {
+        this.rows = object.rows;
+    };
+    EntityLayout.prototype.getEntities = function () {
+        return this.availableEntities;
+    };
+    EntityLayout.prototype.getNumberColumns = function () {
+        return this.numberColumns;
+    };
     return EntityLayout;
 }());
 exports.EntityLayout = EntityLayout;

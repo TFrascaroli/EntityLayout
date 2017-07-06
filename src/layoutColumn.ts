@@ -1,16 +1,24 @@
 import {EntityLayout} from "./entityLayout";
 import {Entity} from "./entity";
 
+interface ILayoutColumn {
+    ent: Entity;
+    dim: number;
+}
+
 export class LayoutColumn {
 
     public div: HTMLDivElement;
     private ent: Entity;
     private el: EntityLayout;
     private dim: number;
+    private div_content: HTMLDivElement;
 
     constructor(el: EntityLayout) {
         let self = this;
         this.div = document.createElement("div");
+        this.div_content = document.createElement("div");
+        
         // Dimensions flex
         let div_dim = document.createElement("input");
         div_dim.className = "dim-col";
@@ -32,6 +40,23 @@ export class LayoutColumn {
             if (evt.target !== self.div) return;
             self.el.openPopup(self);
         });
+        // Button Delete Columns
+        let remove_column_btn = document.createElement("div");
+        remove_column_btn.className = "button-remove-column";
+        remove_column_btn.addEventListener("click", function(){
+            let row_div = self.div.parentElement;
+            let element = row_div.getElementsByClassName("column");
+            if(element.length > 1) {
+                if (self.getEntity()) {
+                let ent = self.getEntity();
+                el.getEntities().push(ent);
+            }
+             self.div.remove();
+             remove_column_btn.remove();
+            }
+
+        });
+        this.div.appendChild(remove_column_btn);
     }
 
     destroy() {
@@ -44,11 +69,15 @@ export class LayoutColumn {
 
     deleteEntity(){
         this.ent = null;
-        this.div.textContent = "";
+        this.div_content.textContent = "";
+        // this.div.textContent = "";
     }
     setEntity(ent: Entity){
+        
         this.ent = ent;
-        this.div.textContent = ent.id.toString();
+        this.div_content.className = "content-column";
+        this.div_content.textContent = ent.id.toString();
+        this.div.appendChild(this.div_content);
     }
     render(): HTMLDivElement {
         let div_rep = document.createElement("div");
@@ -60,4 +89,32 @@ export class LayoutColumn {
         div_rep.style.flex = this.dim + " " + this.dim + " " +  "0px";
         return div_rep;
     };
+
+    serializer() {
+        // Falta el render!!!
+        let colprop = {};
+        if (this.ent) {
+            colprop = {
+                id: this.ent.id,
+                dim: this.dim
+            };
+        }else {
+            colprop = {
+                id: undefined,
+                dim: 1
+            }
+        }
+        return colprop;
+    }
+
+    setDim(dim: number) {
+        this.dim = dim;
+        this.div.style.flex = dim + " " + dim + "auto";
+    }
+
+    parser(object: ILayoutColumn) {
+
+        this.setDim(object.dim);
+        this.setEntity(object.ent);
+    }
 }

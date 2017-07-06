@@ -19,8 +19,22 @@
         </div>
 
         <script type="text/javascript">
-            var el = new entitylayout.EntityLayout();
+            // numero de columnes maximes
+            var maxColumns = 4;
+            var el = new entitylayout.EntityLayout(maxColumns);
 
+            var entity1 = {id: "Option A"};
+            var entity2 = {id: "Option B"};
+            var entity3 = {id: "Option C"};
+            var entity4 = {id: "Option D"};
+            var entity5 = {id: "Option E"};
+            var entity6 = {id: "Option F"};
+            var entity7 = {id: "Option G"};
+            var entity8 = {id: "Option H"};
+
+            el.addEntities([entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
+
+            
             var row1 = el.addRow();
             var row2 = el.addRow();
             var row3 = el.addRow();
@@ -30,7 +44,28 @@
             row4.addColumn();
             var container = document.getElementById("container");
             container.appendChild(el.div);
-            
+
+            var config;
+
+            function Serialitzer() {
+                config = el.serializer();
+            }
+
+            function load() {
+                el.parser(config);
+            }
+
+            function reset(){
+                document.getElementById("container").innerHTML ="";
+            }
+
         </script>
+        <button type="button" onclick="Serialitzer()">Guardar config</button>
+        <button type="button" onclick="reset()">Reset</button>
+        <button type="button" onclick="load()">Cargar Config</button>
+        
+        <script>
+            
+            </script>
     </body>
 </html>

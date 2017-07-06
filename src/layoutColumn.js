@@ -4,6 +4,7 @@ var LayoutColumn = (function () {
     function LayoutColumn(el) {
         var self = this;
         this.div = document.createElement("div");
+        this.div_content = document.createElement("div");
         // Dimensions flex
         var div_dim = document.createElement("input");
         div_dim.className = "dim-col";
@@ -24,6 +25,22 @@ var LayoutColumn = (function () {
                 return;
             self.el.openPopup(self);
         });
+        // Button Delete Columns
+        var remove_column_btn = document.createElement("div");
+        remove_column_btn.className = "button-remove-column";
+        remove_column_btn.addEventListener("click", function () {
+            var row_div = self.div.parentElement;
+            var element = row_div.getElementsByClassName("column");
+            if (element.length > 1) {
+                if (self.getEntity()) {
+                    var ent = self.getEntity();
+                    el.getEntities().push(ent);
+                }
+                self.div.remove();
+                remove_column_btn.remove();
+            }
+        });
+        this.div.appendChild(remove_column_btn);
     }
     LayoutColumn.prototype.destroy = function () {
         this.div = null;
@@ -33,11 +50,14 @@ var LayoutColumn = (function () {
     };
     LayoutColumn.prototype.deleteEntity = function () {
         this.ent = null;
-        this.div.textContent = "";
+        this.div_content.textContent = "";
+        // this.div.textContent = "";
     };
     LayoutColumn.prototype.setEntity = function (ent) {
         this.ent = ent;
-        this.div.textContent = ent.id.toString();
+        this.div_content.className = "content-column";
+        this.div_content.textContent = ent.id.toString();
+        this.div.appendChild(this.div_content);
     };
     LayoutColumn.prototype.render = function () {
         var div_rep = document.createElement("div");
@@ -50,6 +70,31 @@ var LayoutColumn = (function () {
         return div_rep;
     };
     ;
+    LayoutColumn.prototype.serializer = function () {
+        // Falta el render!!!
+        var colprop = {};
+        if (this.ent) {
+            colprop = {
+                id: this.ent.id,
+                dim: this.dim
+            };
+        }
+        else {
+            colprop = {
+                id: undefined,
+                dim: 1
+            };
+        }
+        return colprop;
+    };
+    LayoutColumn.prototype.setDim = function (dim) {
+        this.dim = dim;
+        this.div.style.flex = dim + " " + dim + "auto";
+    };
+    LayoutColumn.prototype.parser = function (object) {
+        this.setDim(object.dim);
+        this.setEntity(object.ent);
+    };
     return LayoutColumn;
 }());
 exports.LayoutColumn = LayoutColumn;

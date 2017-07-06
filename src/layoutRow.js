@@ -10,9 +10,32 @@ var LayoutRow = (function () {
         var div_addColumn_btn = document.createElement("div");
         div_addColumn_btn.className = "button-add-column";
         div_addColumn_btn.addEventListener("click", function () {
-            self.addColumn();
+            var childrensRows = self.div.children;
+            var count = 0;
+            for (var i = 0; i < childrensRows.length; i++) {
+                if (childrensRows[i].className === "column") {
+                    count += 1;
+                }
+            }
+            if (count < el.getNumberColumns()) {
+                self.addColumn();
+            }
         });
         this.div.appendChild(div_addColumn_btn);
+        // Button Delete rows
+        var remove_row_btn = document.createElement("div");
+        remove_row_btn.className = "button-remove-row";
+        remove_row_btn.addEventListener("click", function () {
+            var columns = self.getColumn();
+            columns.forEach(function (c) {
+                if (c.getEntity()) {
+                    el.getEntities().push(c.getEntity());
+                }
+            });
+            self.div.remove();
+            remove_row_btn.remove();
+        });
+        this.div.appendChild(remove_row_btn);
         this.columns = new Array();
         this.el = el;
         // Per defecte tenim una columna
@@ -44,6 +67,19 @@ var LayoutRow = (function () {
         return div_row;
     };
     ;
+    LayoutRow.prototype.serializer = function () {
+        var propCol = [];
+        this.columns.forEach(function (c) {
+            return propCol.push(c.serializer());
+        });
+        var prop = {
+            columns: propCol
+        };
+        return prop;
+    };
+    LayoutRow.prototype.parser = function (object) {
+        this.columns = object.columns;
+    };
     return LayoutRow;
 }());
 exports.LayoutRow = LayoutRow;
