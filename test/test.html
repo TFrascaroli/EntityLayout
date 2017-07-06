@@ -52,7 +52,9 @@
             }
 
             function load() {
-                el.parser(config);
+                document.getElementById("container");
+                el.rows = el.parser(config);
+                
             }
 
             function reset(){

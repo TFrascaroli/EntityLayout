@@ -6,6 +6,7 @@ var EntityLayout = (function () {
     function EntityLayout(numberColumns) {
         var self = this;
         this.availableEntities = [];
+        this.copyAvailableEntities = [];
         this.rows = [];
         this.currentColumn = null;
         this.numberColumns = numberColumns;
@@ -66,6 +67,7 @@ var EntityLayout = (function () {
             popupOption.addEventListener("click", function () {
                 if (self.currentColumn !== null) {
                     self.currentColumn.setEntity(ent);
+                    self.copyAvailableEntities.push(ent);
                     self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
                 }
                 self.popup.classList.remove("visible");
@@ -114,23 +116,28 @@ var EntityLayout = (function () {
     };
     ;
     EntityLayout.prototype.serializer = function () {
-        var rows = [];
-        this.rows.forEach(function (r) {
-            return rows.push(r.serializer());
-        });
-        var objectJSON = {
-            rows: rows
+        return {
+            rows: this.rows.map(function (r) {
+                return r.serializer();
+            })
         };
-        return objectJSON;
     };
     EntityLayout.prototype.parser = function (object) {
-        this.rows = object.rows;
+        var _this = this;
+        this.rows = object.rows.map(function (r) {
+            var row = new layoutRow_1.LayoutRow(_this);
+            row.parser(r);
+            return row;
+        });
     };
     EntityLayout.prototype.getEntities = function () {
         return this.availableEntities;
     };
     EntityLayout.prototype.getNumberColumns = function () {
         return this.numberColumns;
+    };
+    EntityLayout.prototype.get_entity = function () {
+        return this.copyAvailableEntities;
     };
     return EntityLayout;
 }());
@@ -195,10 +202,12 @@ var LayoutColumn = (function () {
         // this.div.textContent = "";
     };
     LayoutColumn.prototype.setEntity = function (ent) {
-        this.ent = ent;
         this.div_content.className = "content-column";
-        this.div_content.textContent = ent.id.toString();
-        this.div.appendChild(this.div_content);
+        if (ent) {
+            this.ent = ent;
+            this.div_content.textContent = ent.id.toString();
+            this.div.appendChild(this.div_content);
+        }
     };
     LayoutColumn.prototype.render = function () {
         var div_rep = document.createElement("div");
@@ -213,18 +222,12 @@ var LayoutColumn = (function () {
     ;
     LayoutColumn.prototype.serializer = function () {
         // Falta el render!!!
-        var colprop = {};
+        var colprop = {
+            entID: null,
+            dim: this.dim
+        };
         if (this.ent) {
-            colprop = {
-                id: this.ent.id,
-                dim: this.dim
-            };
-        }
-        else {
-            colprop = {
-                id: undefined,
-                dim: 1
-            };
+            colprop.entID = this.ent.id;
         }
         return colprop;
     };
@@ -234,7 +237,7 @@ var LayoutColumn = (function () {
     };
     LayoutColumn.prototype.parser = function (object) {
         this.setDim(object.dim);
-        this.setEntity(object.ent);
+        this.setEntity(this.el.get_entity().filter(function (e) { return e.id === object.entID; })[0]);
     };
     return LayoutColumn;
 }());
@@ -313,17 +316,19 @@ var LayoutRow = (function () {
     };
     ;
     LayoutRow.prototype.serializer = function () {
-        var propCol = [];
-        this.columns.forEach(function (c) {
-            return propCol.push(c.serializer());
-        });
-        var prop = {
-            columns: propCol
+        return {
+            columns: this.columns.map(function (c) {
+                return c.serializer();
+            })
         };
-        return prop;
     };
     LayoutRow.prototype.parser = function (object) {
-        this.columns = object.columns;
+        var _this = this;
+        this.columns = object.columns.map(function (c) {
+            var col = new layoutColumn_1.LayoutColumn(_this.el);
+            col.parser(c);
+            return col;
+        });
     };
     return LayoutRow;
 }());

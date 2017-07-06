@@ -68,17 +68,19 @@ var LayoutRow = (function () {
     };
     ;
     LayoutRow.prototype.serializer = function () {
-        var propCol = [];
-        this.columns.forEach(function (c) {
-            return propCol.push(c.serializer());
-        });
-        var prop = {
-            columns: propCol
+        return {
+            columns: this.columns.map(function (c) {
+                return c.serializer();
+            })
         };
-        return prop;
     };
     LayoutRow.prototype.parser = function (object) {
-        this.columns = object.columns;
+        var _this = this;
+        this.columns = object.columns.map(function (c) {
+            var col = new layoutColumn_1.LayoutColumn(_this.el);
+            col.parser(c);
+            return col;
+        });
     };
     return LayoutRow;
 }());

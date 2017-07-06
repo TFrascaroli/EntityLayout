@@ -2,10 +2,7 @@ import {LayoutRow} from "./layoutRow";
 import {IEntity} from "./IEntity";
 import {Entity} from "./entity";
 import {LayoutColumn} from "./layoutColumn";
-
-interface IEntityLayout {
-    rows: Array<LayoutRow>;
-}
+import {IEntityLayout} from "./interfaces/IEntityLayout";
 
 
 export class EntityLayout {
@@ -18,10 +15,12 @@ export class EntityLayout {
     private div: HTMLDivElement;
     private div_container: HTMLDivElement;
     private numberColumns: number;
+    private copyAvailableEntities: Array<Entity>;
 
     constructor(numberColumns: number) {
         let self = this;
         this.availableEntities = [];
+        this.copyAvailableEntities = [];
         this.rows = [];
         this.currentColumn = null;
         this.numberColumns = numberColumns;
@@ -63,7 +62,6 @@ export class EntityLayout {
     openPopup(col: LayoutColumn) {
         let self = this;
         this.currentColumn = col;
-
         if (this.currentColumn.getEntity()) {
             let ent = this.currentColumn.getEntity();
             this.availableEntities.push(ent);
@@ -85,6 +83,7 @@ export class EntityLayout {
                 popupOption.addEventListener("click", function () {
                     if (self.currentColumn !== null) {
                         self.currentColumn.setEntity(ent);
+                        self.copyAvailableEntities.push(ent);
                         self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
                     }
                     self.popup.classList.remove("visible");
@@ -135,20 +134,20 @@ export class EntityLayout {
 
     };
 
-    serializer() {
-        let rows = [];
-        this.rows.forEach(r => {
-            return rows.push(r.serializer());
-        });
-        let objectJSON = {
-            rows: rows
-        };
-
-        return objectJSON;
+    serializer(): IEntityLayout {
+        return {
+            rows: this.rows.map(r => {
+                return r.serializer();
+            })
+        }
     }
 
     parser(object: IEntityLayout) {
-        this.rows = object.rows;
+        this.rows = object.rows.map(r => {
+            let row = new LayoutRow(this);
+            row.parser(r);
+            return row;
+        });
     }
 
     getEntities() {
@@ -157,5 +156,9 @@ export class EntityLayout {
 
     getNumberColumns(){
         return this.numberColumns;
+    }
+
+    get_entity(){
+        return this.copyAvailableEntities;
     }
 }

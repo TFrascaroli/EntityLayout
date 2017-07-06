@@ -5,6 +5,7 @@ var EntityLayout = (function () {
     function EntityLayout(numberColumns) {
         var self = this;
         this.availableEntities = [];
+        this.copyAvailableEntities = [];
         this.rows = [];
         this.currentColumn = null;
         this.numberColumns = numberColumns;
@@ -65,6 +66,7 @@ var EntityLayout = (function () {
             popupOption.addEventListener("click", function () {
                 if (self.currentColumn !== null) {
                     self.currentColumn.setEntity(ent);
+                    self.copyAvailableEntities.push(ent);
                     self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
                 }
                 self.popup.classList.remove("visible");
@@ -113,23 +115,28 @@ var EntityLayout = (function () {
     };
     ;
     EntityLayout.prototype.serializer = function () {
-        var rows = [];
-        this.rows.forEach(function (r) {
-            return rows.push(r.serializer());
-        });
-        var objectJSON = {
-            rows: rows
+        return {
+            rows: this.rows.map(function (r) {
+                return r.serializer();
+            })
         };
-        return objectJSON;
     };
     EntityLayout.prototype.parser = function (object) {
-        this.rows = object.rows;
+        var _this = this;
+        this.rows = object.rows.map(function (r) {
+            var row = new layoutRow_1.LayoutRow(_this);
+            row.parser(r);
+            return row;
+        });
     };
     EntityLayout.prototype.getEntities = function () {
         return this.availableEntities;
     };
     EntityLayout.prototype.getNumberColumns = function () {
         return this.numberColumns;
+    };
+    EntityLayout.prototype.get_entity = function () {
+        return this.copyAvailableEntities;
     };
     return EntityLayout;
 }());

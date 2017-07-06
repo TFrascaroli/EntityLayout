@@ -54,10 +54,12 @@ var LayoutColumn = (function () {
         // this.div.textContent = "";
     };
     LayoutColumn.prototype.setEntity = function (ent) {
-        this.ent = ent;
         this.div_content.className = "content-column";
-        this.div_content.textContent = ent.id.toString();
-        this.div.appendChild(this.div_content);
+        if (ent) {
+            this.ent = ent;
+            this.div_content.textContent = ent.id.toString();
+            this.div.appendChild(this.div_content);
+        }
     };
     LayoutColumn.prototype.render = function () {
         var div_rep = document.createElement("div");
@@ -72,18 +74,12 @@ var LayoutColumn = (function () {
     ;
     LayoutColumn.prototype.serializer = function () {
         // Falta el render!!!
-        var colprop = {};
+        var colprop = {
+            entID: null,
+            dim: this.dim
+        };
         if (this.ent) {
-            colprop = {
-                id: this.ent.id,
-                dim: this.dim
-            };
-        }
-        else {
-            colprop = {
-                id: undefined,
-                dim: 1
-            };
+            colprop.entID = this.ent.id;
         }
         return colprop;
     };
@@ -93,7 +89,7 @@ var LayoutColumn = (function () {
     };
     LayoutColumn.prototype.parser = function (object) {
         this.setDim(object.dim);
-        this.setEntity(object.ent);
+        this.setEntity(this.el.get_entity().filter(function (e) { return e.id === object.entID; })[0]);
     };
     return LayoutColumn;
 }());

@@ -1,10 +1,6 @@
 import {EntityLayout} from "./entityLayout";
 import {Entity} from "./entity";
-
-interface ILayoutColumn {
-    ent: Entity;
-    dim: number;
-}
+import {ILayoutColumn} from "./interfaces/ILayoutColumn";
 
 export class LayoutColumn {
 
@@ -73,11 +69,12 @@ export class LayoutColumn {
         // this.div.textContent = "";
     }
     setEntity(ent: Entity){
-        
-        this.ent = ent;
         this.div_content.className = "content-column";
-        this.div_content.textContent = ent.id.toString();
-        this.div.appendChild(this.div_content);
+        if(ent){
+            this.ent = ent;
+            this.div_content.textContent = ent.id.toString();
+            this.div.appendChild(this.div_content);
+        }
     }
     render(): HTMLDivElement {
         let div_rep = document.createElement("div");
@@ -90,19 +87,14 @@ export class LayoutColumn {
         return div_rep;
     };
 
-    serializer() {
+    serializer(): ILayoutColumn {
         // Falta el render!!!
-        let colprop = {};
+        let colprop = {
+            entID: null,
+            dim: this.dim
+        };
         if (this.ent) {
-            colprop = {
-                id: this.ent.id,
-                dim: this.dim
-            };
-        }else {
-            colprop = {
-                id: undefined,
-                dim: 1
-            }
+            colprop.entID = this.ent.id;
         }
         return colprop;
     }
@@ -113,8 +105,7 @@ export class LayoutColumn {
     }
 
     parser(object: ILayoutColumn) {
-
         this.setDim(object.dim);
-        this.setEntity(object.ent);
+        this.setEntity(this.el.get_entity().filter(e => {return e.id === object.entID})[0]);
     }
 }

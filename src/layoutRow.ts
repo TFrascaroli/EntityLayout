@@ -1,9 +1,6 @@
 import {LayoutColumn} from "./layoutColumn";
 import {EntityLayout} from "./entityLayout";
-
-interface ILayoutRow {
-    columns: Array<LayoutColumn>;
-}
+import {ILayoutRow} from "./interfaces/ILayoutRow";
 
 
 export class LayoutRow {
@@ -84,20 +81,18 @@ export class LayoutRow {
         return div_row;
     };
 
-    serializer() {
-        let propCol = [];
-
-        this.columns.forEach(c =>{
-                return propCol.push(c.serializer());
-        });
-
-        let prop = {
-            columns: propCol
+    serializer(): ILayoutRow {
+        return {
+            columns: this.columns.map(c =>{
+                return c.serializer();
+            })
         }
-        return prop;
-        
     }
     parser(object: ILayoutRow) {
-        this.columns = object.columns;
+        this.columns = object.columns.map(c => {
+            let col = new LayoutColumn(this.el);
+            col.parser(c);
+            return col;
+        });
     }
 }
