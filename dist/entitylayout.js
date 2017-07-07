@@ -108,7 +108,7 @@ var EntityLayout = (function () {
             div_rows.appendChild(r.render());
         });
         // Cambiar!!
-        return "<html><head><style type=\"text/css\"><\/style><\/head><body>" + div_rows.outerHTML + "<\/body><\/html>";
+        return div_rows.outerHTML;
     };
     ;
     EntityLayout.prototype.serializer = function () {
@@ -178,6 +178,7 @@ var LayoutColumn = (function () {
         this.div_content = document.createElement("div");
         this.div_content.className = "content-column";
         this.div.appendChild(this.div_content);
+        this.dim = 1;
         // Dimensions flex
         var div_dim = document.createElement("input");
         div_dim.className = "dim-col";
@@ -243,7 +244,7 @@ var LayoutColumn = (function () {
         if (this.ent) {
             div_inner.appendChild(this.ent.render());
         }
-        div_rep.style.flex = this.dim + " " + this.dim + " " + "0px";
+        div_rep.style.flex = this.dim.toString() + " " + this.dim.toString() + " " + "auto";
         return div_rep;
     };
     ;
