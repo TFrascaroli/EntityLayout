@@ -1,6 +1,6 @@
 {
   "name": "entitylayout",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "UI for code generation of entities relationship.",
   "main": "dist/entitylayout.js",
   "types": "dist/entitylayout.d.ts",
