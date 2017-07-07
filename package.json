@@ -3,7 +3,7 @@
   "version": "1.0.3",
   "description": "UI for code generation of entities relationship.",
   "main": "dist/entitylayout.js",
-  "types": "types/entitylayout.d.ts",
+  "types": "dist/entitylayout.d.ts",
   "directories": {
     "test": "test"
   },
@@ -22,6 +22,7 @@
   "devDependencies": {
     "browserify": "^14.4.0",
     "cssmin": "^0.4.3",
+    "dts-bundle": "^0.7.3",
     "gulp": "^3.9.1",
     "gulp-cssmin": "^0.2.0",
     "gulp-less": "^3.3.2",

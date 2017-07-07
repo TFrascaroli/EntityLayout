@@ -15,23 +15,29 @@ var browserify  = require("browserify"),
     rename      = require('gulp-rename'),
     merge       = require('merge-stream'),
     cssmin      = require('gulp-cssmin'),
+    dts 		= require('dts-bundle').bundle,
     util        = require('gulp-util');
 
 var tsProject = ts.createProject("tsconfig.json");
 var tsTestProject = ts.createProject("tsconfig.json");
 
 gulp.task("build-app", function() {
-    var tspipe = gulp.src([
-            "src/**/**.ts",
-            "typings/main.d.ts/"
+    return gulp.src([
+            "src/**/**.ts"
         ])
-        .pipe(sourcemaps.init())
-        .pipe(tsProject());
+        .pipe(tsProject()).pipe(gulp.dest('./obj/'));
+});
 
-    return merge([
-        tspipe.dts.pipe(gulp.dest('./types/')),
-        tspipe.js.pipe(sourcemaps.write('.')).pipe(gulp.dest('./obj/'))
-    ]);
+gulp.task('definitions', ['build-app'], function(done) {
+    dts({
+        name: 'entitylayout',
+        baseDir: 'obj/',
+        main: './obj/entitylayout.d.ts',
+        out: '../dist/entitylayout.d.ts',
+        externals: true,
+        verbose: true
+    });
+    done();
 });
 
 // Lint Task
@@ -98,4 +104,4 @@ gulp.task('watch', function() {
 });
 
 // Default Task
-gulp.task('default', ["lint", "bundle", "less", "watch"]);
+gulp.task('default', ["lint", "bundle", "definitions", "less"]);

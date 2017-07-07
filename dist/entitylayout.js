@@ -167,8 +167,6 @@ var EntityLayout = (function () {
 }());
 exports.EntityLayout = EntityLayout;
 
-
-
 },{"./layoutrow":3}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -274,8 +272,6 @@ var LayoutColumn = (function () {
 }());
 exports.LayoutColumn = LayoutColumn;
 
-
-
 },{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -374,8 +370,6 @@ var LayoutRow = (function () {
     return LayoutRow;
 }());
 exports.LayoutRow = LayoutRow;
-
-
 
 },{"./layoutcolumn":2}]},{},[1])(1)
 });
