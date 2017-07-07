@@ -26,7 +26,7 @@ declare module 'entitylayout' {
 
 declare module 'entitylayout/layoutrow' {
     import { LayoutColumn } from "entitylayout/layoutcolumn";
-    import { EntityLayout } from "entitylayout/entitylayout";
+    import { EntityLayout } from "entitylayout";
     import { ILayoutRow } from "entitylayout/interfaces/ILayoutRow";
     export class LayoutRow {
         columns: Array<LayoutColumn>;
@@ -52,7 +52,7 @@ declare module 'entitylayout/entity' {
 }
 
 declare module 'entitylayout/layoutcolumn' {
-    import { EntityLayout } from "entitylayout/entitylayout";
+    import { EntityLayout } from "entitylayout";
     import { Entity } from "entitylayout/entity";
     import { ILayoutColumn } from "entitylayout/interfaces/ILayoutColumn";
     import { LayoutRow } from "entitylayout/layoutrow";

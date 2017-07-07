@@ -34,7 +34,6 @@ gulp.task('definitions', ['build-app'], function(done) {
         baseDir: 'obj/',
         main: './obj/entitylayout.d.ts',
         out: '../dist/entitylayout.d.ts',
-        externals: true,
         verbose: true
     });
     done();
@@ -104,4 +103,4 @@ gulp.task('watch', function() {
 });
 
 // Default Task
-gulp.task('default', ["lint", "bundle", "definitions", "less"]);
+gulp.task('default', ["lint", "bundle", "less"]);
