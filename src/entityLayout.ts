@@ -1,5 +1,5 @@
 import {LayoutRow} from "./layoutRow";
-import {IEntity} from "./IEntity";
+import {IEntity} from "./interfaces/IEntity";
 import {Entity} from "./entity";
 import {LayoutColumn} from "./layoutColumn";
 import {IEntityLayout} from "./interfaces/IEntityLayout";

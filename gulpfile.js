@@ -21,14 +21,17 @@ var tsProject = ts.createProject("tsconfig.json");
 var tsTestProject = ts.createProject("tsconfig.json");
 
 gulp.task("build-app", function() {
-    return gulp.src([
+    var tspipe = gulp.src([
             "src/**/**.ts",
             "typings/main.d.ts/"
         ])
         .pipe(sourcemaps.init())
-        .pipe(tsProject())
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest("src/"));
+        .pipe(tsProject());
+
+    return merge([
+        tspipe.dts.pipe(gulp.dest('./types/')),
+        tspipe.js.pipe(sourcemaps.write('.')).pipe(gulp.dest('./obj/'))
+    ]);
 });
 
 // Lint Task
@@ -47,7 +50,7 @@ gulp.task("lint", function() {
 gulp.task("bundle", ["build-app"], function() {
 
     var libraryName = "entitylayout";
-    var mainTsFilePath = "src/entitylayout.js";
+    var mainTsFilePath = "obj/entitylayout.js";
     var outputFolder   = "dist/";
     var outputFileName = "entitylayout.js";
     var outputFileNameMin = "entitylayout.min.js";
