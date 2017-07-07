@@ -67,8 +67,8 @@ var EntityLayout = (function () {
             popupOption.addEventListener("click", function () {
                 if (self.currentColumn !== null) {
                     self.currentColumn.setEntity(ent);
-                    self.copyAvailableEntities.push(ent);
                     self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
+                    self.copyAvailableEntities.push(ent);
                 }
                 self.popup.classList.remove("visible");
             });
@@ -99,10 +99,6 @@ var EntityLayout = (function () {
         this.div_container.appendChild(r.div);
         return r;
     };
-    EntityLayout.prototype.clear = function () {
-        this.availableEntities = [];
-        this.rows = [];
-    };
     EntityLayout.prototype.render = function () {
         var div_rows = document.createElement("div");
         div_rows.style.width = "21cm";
@@ -122,11 +118,28 @@ var EntityLayout = (function () {
             })
         };
     };
+    EntityLayout.prototype.reset = function () {
+        var self = this;
+        this.rows.forEach(function (r) {
+            self.div_container.removeChild(r.div);
+            r.clear();
+        });
+        this.rows = [];
+    };
+    EntityLayout.prototype.clear = function () {
+        this.reset();
+        this.availableEntities = [];
+        this.copyAvailableEntities = [];
+        this.addRow();
+    };
     EntityLayout.prototype.parser = function (object) {
         var _this = this;
+        this.reset();
         this.rows = object.rows.map(function (r) {
             var row = new layoutRow_1.LayoutRow(_this);
+            row.clear();
             row.parser(r);
+            _this.div_container.appendChild(row.div);
             return row;
         });
     };
@@ -135,6 +148,14 @@ var EntityLayout = (function () {
     };
     EntityLayout.prototype.getNumberColumns = function () {
         return this.numberColumns;
+    };
+    EntityLayout.prototype.assignEntity = function (id, col) {
+        if (id) {
+            var ent = this.availableEntities.filter(function (e) { return e.id === id; })[0];
+            col.setEntity(ent);
+            this.availableEntities.splice(this.availableEntities.indexOf(ent), 1);
+            this.copyAvailableEntities.push(ent);
+        }
     };
     EntityLayout.prototype.get_entity = function () {
         return this.copyAvailableEntities;
@@ -149,10 +170,13 @@ exports.EntityLayout = EntityLayout;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var LayoutColumn = (function () {
-    function LayoutColumn(el) {
+    function LayoutColumn(el, row) {
         var self = this;
+        this.row = row;
         this.div = document.createElement("div");
         this.div_content = document.createElement("div");
+        this.div_content.className = "content-column";
+        this.div.appendChild(this.div_content);
         // Dimensions flex
         var div_dim = document.createElement("input");
         div_dim.className = "dim-col";
@@ -186,6 +210,7 @@ var LayoutColumn = (function () {
                 }
                 self.div.remove();
                 remove_column_btn.remove();
+                self.row.columns.splice(self.row.columns.indexOf(self), 1);
             }
         });
         this.div.appendChild(remove_column_btn);
@@ -202,11 +227,10 @@ var LayoutColumn = (function () {
         // this.div.textContent = "";
     };
     LayoutColumn.prototype.setEntity = function (ent) {
-        this.div_content.className = "content-column";
+        var self = this;
         if (ent) {
             this.ent = ent;
-            this.div_content.textContent = ent.id.toString();
-            this.div.appendChild(this.div_content);
+            self.div_content.textContent = ent.id.toString();
         }
     };
     LayoutColumn.prototype.render = function () {
@@ -215,13 +239,14 @@ var LayoutColumn = (function () {
         div_inner.classList.add("sledge-hammer-inner");
         div_rep.className = "flexChild sledge-hammer";
         div_rep.appendChild(div_inner);
-        div_inner.appendChild(this.ent.render());
+        if (this.ent) {
+            div_inner.appendChild(this.ent.render());
+        }
         div_rep.style.flex = this.dim + " " + this.dim + " " + "0px";
         return div_rep;
     };
     ;
     LayoutColumn.prototype.serializer = function () {
-        // Falta el render!!!
         var colprop = {
             entID: null,
             dim: this.dim
@@ -231,13 +256,16 @@ var LayoutColumn = (function () {
         }
         return colprop;
     };
+    LayoutColumn.prototype.clear = function () {
+        this.ent = null;
+    };
     LayoutColumn.prototype.setDim = function (dim) {
         this.dim = dim;
         this.div.style.flex = dim + " " + dim + "auto";
     };
     LayoutColumn.prototype.parser = function (object) {
         this.setDim(object.dim);
-        this.setEntity(this.el.get_entity().filter(function (e) { return e.id === object.entID; })[0]);
+        this.el.assignEntity(object.entID, this);
     };
     return LayoutColumn;
 }());
@@ -281,6 +309,7 @@ var LayoutRow = (function () {
                 }
             });
             self.div.remove();
+            self.el.rows.splice(self.el.rows.indexOf(self), 1);
             remove_row_btn.remove();
         });
         this.div.appendChild(remove_row_btn);
@@ -293,7 +322,7 @@ var LayoutRow = (function () {
         return this.columns;
     };
     LayoutRow.prototype.addColumn = function () {
-        var c = new layoutColumn_1.LayoutColumn(this.el);
+        var c = new layoutColumn_1.LayoutColumn(this.el, this);
         this.columns.push(c);
         this.div.appendChild(c.div);
         return c;
@@ -315,6 +344,14 @@ var LayoutRow = (function () {
         return div_row;
     };
     ;
+    LayoutRow.prototype.clear = function () {
+        var self = this;
+        this.columns.forEach(function (c) {
+            self.div.removeChild(c.div);
+            c.clear();
+        });
+        this.columns = [];
+    };
     LayoutRow.prototype.serializer = function () {
         return {
             columns: this.columns.map(function (c) {
@@ -325,8 +362,9 @@ var LayoutRow = (function () {
     LayoutRow.prototype.parser = function (object) {
         var _this = this;
         this.columns = object.columns.map(function (c) {
-            var col = new layoutColumn_1.LayoutColumn(_this.el);
+            var col = new layoutColumn_1.LayoutColumn(_this.el, _this);
             col.parser(c);
+            _this.div.appendChild(col.div);
             return col;
         });
     };

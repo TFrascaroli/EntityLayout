@@ -8,7 +8,7 @@ import {IEntityLayout} from "./interfaces/IEntityLayout";
 export class EntityLayout {
 
     private availableEntities: Array<Entity>;
-    private rows: Array<LayoutRow>;
+    public rows: Array<LayoutRow>;
     private currentColumn: LayoutColumn;
     private popup: HTMLDivElement;
     private popupSelectArea: HTMLDivElement;
@@ -83,8 +83,8 @@ export class EntityLayout {
                 popupOption.addEventListener("click", function () {
                     if (self.currentColumn !== null) {
                         self.currentColumn.setEntity(ent);
-                        self.copyAvailableEntities.push(ent);
                         self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
+                        self.copyAvailableEntities.push(ent);
                     }
                     self.popup.classList.remove("visible");
                 });
@@ -117,10 +117,7 @@ export class EntityLayout {
         this.div_container.appendChild(r.div);
         return r;
     }
-    clear() {
-        this.availableEntities = [];
-        this.rows = [];
-    }
+
     render() {
         let div_rows = document.createElement("div");
         div_rows.style.width = "21cm";
@@ -142,10 +139,29 @@ export class EntityLayout {
         }
     }
 
+    reset() {
+        let self = this;
+        this.rows.forEach(function (r) {
+            self.div_container.removeChild(r.div);
+            r.clear();
+        });
+        this.rows = [];
+    }
+    
+    clear() {
+        this.reset();
+        this.availableEntities = [];
+        this.copyAvailableEntities = [];
+        this.addRow();
+    }
+
     parser(object: IEntityLayout) {
+        this.reset();
         this.rows = object.rows.map(r => {
             let row = new LayoutRow(this);
+            row.clear();
             row.parser(r);
+            this.div_container.appendChild(row.div);
             return row;
         });
     }
@@ -156,6 +172,15 @@ export class EntityLayout {
 
     getNumberColumns(){
         return this.numberColumns;
+    }
+
+    assignEntity(id: string, col: LayoutColumn) {
+        if (id) {
+            let ent = this.availableEntities.filter(e => {return e.id === id})[0];
+            col.setEntity(ent);
+            this.availableEntities.splice(this.availableEntities.indexOf(ent), 1);
+            this.copyAvailableEntities.push(ent);
+        }
     }
 
     get_entity(){

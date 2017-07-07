@@ -5,7 +5,7 @@ import {ILayoutRow} from "./interfaces/ILayoutRow";
 
 export class LayoutRow {
     
-    private columns: Array<LayoutColumn>;
+    public columns: Array<LayoutColumn>;
     public div: HTMLDivElement;
     private el: EntityLayout;
     
@@ -43,6 +43,7 @@ export class LayoutRow {
                 }
             })
             self.div.remove();
+            self.el.rows.splice(self.el.rows.indexOf(self), 1);
             remove_row_btn.remove();
         });
         this.div.appendChild(remove_row_btn);
@@ -57,7 +58,7 @@ export class LayoutRow {
     }
 
     addColumn() {
-        let c = new LayoutColumn(this.el);
+        let c = new LayoutColumn(this.el, this);
         this.columns.push(c);
         this.div.appendChild(c.div);
         return c;
@@ -81,6 +82,16 @@ export class LayoutRow {
         return div_row;
     };
 
+    clear() {
+        let self = this;
+        this.columns.forEach(function (c) {
+            self.div.removeChild(c.div);
+            c.clear();
+        });
+        this.columns = [];
+    }
+
+
     serializer(): ILayoutRow {
         return {
             columns: this.columns.map(c =>{
@@ -90,8 +101,9 @@ export class LayoutRow {
     }
     parser(object: ILayoutRow) {
         this.columns = object.columns.map(c => {
-            let col = new LayoutColumn(this.el);
+            let col = new LayoutColumn(this.el, this);
             col.parser(c);
+            this.div.appendChild(col.div);
             return col;
         });
     }

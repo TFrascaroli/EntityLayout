@@ -23,14 +23,30 @@
             var maxColumns = 4;
             var el = new entitylayout.EntityLayout(maxColumns);
 
-            var entity1 = {id: "Option A"};
-            var entity2 = {id: "Option B"};
-            var entity3 = {id: "Option C"};
-            var entity4 = {id: "Option D"};
-            var entity5 = {id: "Option E"};
-            var entity6 = {id: "Option F"};
-            var entity7 = {id: "Option G"};
-            var entity8 = {id: "Option H"};
+            var entity1 = {id: "Option A", render: function () {
+                return this.id;
+            }};
+            var entity2 = {id: "Option B", render: function () {
+                return this.id;
+            }};
+            var entity3 = {id: "Option C", render: function () {
+                return this.id;
+            }};
+            var entity4 = {id: "Option D", render: function () {
+                return this.id;
+            }};
+            var entity5 = {id: "Option E", render: function () {
+                return this.id;
+            }};
+            var entity6 = {id: "Option F", render: function () {
+                return this.id;
+            }};
+            var entity7 = {id: "Option G", render: function () {
+                return this.id;
+            }};
+            var entity8 = {id: "Option H", render: function () {
+                return this.id;
+            }};
 
             el.addEntities([entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
 
@@ -52,13 +68,14 @@
             }
 
             function load() {
-                document.getElementById("container");
-                el.rows = el.parser(config);
+                // document.getElementById("container");
+                el.addEntities([entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
+                el.parser(config);
                 
             }
 
             function reset(){
-                document.getElementById("container").innerHTML ="";
+                el.clear();
             }
 
         </script>

@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var LayoutColumn = (function () {
-    function LayoutColumn(el) {
+    function LayoutColumn(el, row) {
         var self = this;
+        this.row = row;
         this.div = document.createElement("div");
         this.div_content = document.createElement("div");
+        this.div_content.className = "content-column";
+        this.div.appendChild(this.div_content);
         // Dimensions flex
         var div_dim = document.createElement("input");
         div_dim.className = "dim-col";
@@ -38,6 +41,7 @@ var LayoutColumn = (function () {
                 }
                 self.div.remove();
                 remove_column_btn.remove();
+                self.row.columns.splice(self.row.columns.indexOf(self), 1);
             }
         });
         this.div.appendChild(remove_column_btn);
@@ -54,11 +58,10 @@ var LayoutColumn = (function () {
         // this.div.textContent = "";
     };
     LayoutColumn.prototype.setEntity = function (ent) {
-        this.div_content.className = "content-column";
+        var self = this;
         if (ent) {
             this.ent = ent;
-            this.div_content.textContent = ent.id.toString();
-            this.div.appendChild(this.div_content);
+            self.div_content.textContent = ent.id.toString();
         }
     };
     LayoutColumn.prototype.render = function () {
@@ -67,13 +70,14 @@ var LayoutColumn = (function () {
         div_inner.classList.add("sledge-hammer-inner");
         div_rep.className = "flexChild sledge-hammer";
         div_rep.appendChild(div_inner);
-        div_inner.appendChild(this.ent.render());
+        if (this.ent) {
+            div_inner.appendChild(this.ent.render());
+        }
         div_rep.style.flex = this.dim + " " + this.dim + " " + "0px";
         return div_rep;
     };
     ;
     LayoutColumn.prototype.serializer = function () {
-        // Falta el render!!!
         var colprop = {
             entID: null,
             dim: this.dim
@@ -83,13 +87,16 @@ var LayoutColumn = (function () {
         }
         return colprop;
     };
+    LayoutColumn.prototype.clear = function () {
+        this.ent = null;
+    };
     LayoutColumn.prototype.setDim = function (dim) {
         this.dim = dim;
         this.div.style.flex = dim + " " + dim + "auto";
     };
     LayoutColumn.prototype.parser = function (object) {
         this.setDim(object.dim);
-        this.setEntity(this.el.get_entity().filter(function (e) { return e.id === object.entID; })[0]);
+        this.el.assignEntity(object.entID, this);
     };
     return LayoutColumn;
 }());

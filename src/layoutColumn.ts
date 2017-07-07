@@ -1,6 +1,7 @@
 import {EntityLayout} from "./entityLayout";
 import {Entity} from "./entity";
 import {ILayoutColumn} from "./interfaces/ILayoutColumn";
+import {LayoutRow} from "./LayoutRow";
 
 export class LayoutColumn {
 
@@ -9,12 +10,15 @@ export class LayoutColumn {
     private el: EntityLayout;
     private dim: number;
     private div_content: HTMLDivElement;
+    private row: LayoutRow;
 
-    constructor(el: EntityLayout) {
+    constructor(el: EntityLayout, row: LayoutRow) {
         let self = this;
+        this.row = row;
         this.div = document.createElement("div");
         this.div_content = document.createElement("div");
-        
+        this.div_content.className = "content-column";
+        this.div.appendChild(this.div_content);
         // Dimensions flex
         let div_dim = document.createElement("input");
         div_dim.className = "dim-col";
@@ -49,6 +53,7 @@ export class LayoutColumn {
             }
              self.div.remove();
              remove_column_btn.remove();
+             self.row.columns.splice(self.row.columns.indexOf(self), 1);
             }
 
         });
@@ -69,11 +74,11 @@ export class LayoutColumn {
         // this.div.textContent = "";
     }
     setEntity(ent: Entity){
-        this.div_content.className = "content-column";
+        let self = this;
         if(ent){
             this.ent = ent;
-            this.div_content.textContent = ent.id.toString();
-            this.div.appendChild(this.div_content);
+            self.div_content.textContent = ent.id.toString();
+            
         }
     }
     render(): HTMLDivElement {
@@ -82,13 +87,14 @@ export class LayoutColumn {
         div_inner.classList.add("sledge-hammer-inner");
         div_rep.className = "flexChild sledge-hammer";
         div_rep.appendChild(div_inner);
-        div_inner.appendChild(this.ent.render());
+        if (this.ent) {
+            div_inner.appendChild(this.ent.render());
+        }
         div_rep.style.flex = this.dim + " " + this.dim + " " +  "0px";
         return div_rep;
     };
 
     serializer(): ILayoutColumn {
-        // Falta el render!!!
         let colprop = {
             entID: null,
             dim: this.dim
@@ -99,6 +105,10 @@ export class LayoutColumn {
         return colprop;
     }
 
+    clear () {
+        this.ent = null;
+    }
+
     setDim(dim: number) {
         this.dim = dim;
         this.div.style.flex = dim + " " + dim + "auto";
@@ -106,6 +116,6 @@ export class LayoutColumn {
 
     parser(object: ILayoutColumn) {
         this.setDim(object.dim);
-        this.setEntity(this.el.get_entity().filter(e => {return e.id === object.entID})[0]);
+        this.el.assignEntity(object.entID, this);
     }
 }

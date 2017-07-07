@@ -33,6 +33,7 @@ var LayoutRow = (function () {
                 }
             });
             self.div.remove();
+            self.el.rows.splice(self.el.rows.indexOf(self), 1);
             remove_row_btn.remove();
         });
         this.div.appendChild(remove_row_btn);
@@ -45,7 +46,7 @@ var LayoutRow = (function () {
         return this.columns;
     };
     LayoutRow.prototype.addColumn = function () {
-        var c = new layoutColumn_1.LayoutColumn(this.el);
+        var c = new layoutColumn_1.LayoutColumn(this.el, this);
         this.columns.push(c);
         this.div.appendChild(c.div);
         return c;
@@ -67,6 +68,14 @@ var LayoutRow = (function () {
         return div_row;
     };
     ;
+    LayoutRow.prototype.clear = function () {
+        var self = this;
+        this.columns.forEach(function (c) {
+            self.div.removeChild(c.div);
+            c.clear();
+        });
+        this.columns = [];
+    };
     LayoutRow.prototype.serializer = function () {
         return {
             columns: this.columns.map(function (c) {
@@ -77,8 +86,9 @@ var LayoutRow = (function () {
     LayoutRow.prototype.parser = function (object) {
         var _this = this;
         this.columns = object.columns.map(function (c) {
-            var col = new layoutColumn_1.LayoutColumn(_this.el);
+            var col = new layoutColumn_1.LayoutColumn(_this.el, _this);
             col.parser(c);
+            _this.div.appendChild(col.div);
             return col;
         });
     };
