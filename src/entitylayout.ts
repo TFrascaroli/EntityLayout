@@ -127,7 +127,7 @@ export class EntityLayout {
            div_rows.appendChild(r.render());
         });
         // Cambiar!!
-        return "<html><head><style type=\"text/css\"><\/style><\/head><body>" + div_rows.outerHTML + "<\/body><\/html>";
+        return div_rows.outerHTML;
 
     };
 
