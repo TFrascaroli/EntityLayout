@@ -183,6 +183,10 @@ export class EntityLayout {
         }
     }
 
+    getUI(): HTMLDivElement {
+        return this.div;
+    }
+
     get_entity(){
         return this.copyAvailableEntities;
     }

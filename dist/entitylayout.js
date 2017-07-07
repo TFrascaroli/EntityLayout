@@ -157,6 +157,9 @@ var EntityLayout = (function () {
             this.copyAvailableEntities.push(ent);
         }
     };
+    EntityLayout.prototype.getUI = function () {
+        return this.div;
+    };
     EntityLayout.prototype.get_entity = function () {
         return this.copyAvailableEntities;
     };
