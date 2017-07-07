@@ -1,6 +1,6 @@
-import { LayoutRow } from "./layoutRow";
+import { LayoutRow } from "./layoutrow";
 import { Entity } from "./entity";
-import { LayoutColumn } from "./layoutColumn";
+import { LayoutColumn } from "./layoutcolumn";
 import { IEntityLayout } from "./interfaces/IEntityLayout";
 export declare class EntityLayout {
     private availableEntities;

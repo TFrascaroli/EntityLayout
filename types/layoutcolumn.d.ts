@@ -1,7 +1,7 @@
-import { EntityLayout } from "./entityLayout";
+import { EntityLayout } from "./entitylayout";
 import { Entity } from "./entity";
 import { ILayoutColumn } from "./interfaces/ILayoutColumn";
-import { LayoutRow } from "./LayoutRow";
+import { LayoutRow } from "./layoutrow";
 export declare class LayoutColumn {
     div: HTMLDivElement;
     private ent;

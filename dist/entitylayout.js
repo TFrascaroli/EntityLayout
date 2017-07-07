@@ -1,7 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.entitylayout = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var layoutRow_1 = require("./layoutRow");
+var layoutrow_1 = require("./layoutrow");
 var EntityLayout = (function () {
     function EntityLayout(numberColumns) {
         var self = this;
@@ -94,7 +94,7 @@ var EntityLayout = (function () {
         self.availableEntities = ents;
     };
     EntityLayout.prototype.addRow = function () {
-        var r = new layoutRow_1.LayoutRow(this);
+        var r = new layoutrow_1.LayoutRow(this);
         this.rows.push(r);
         this.div_container.appendChild(r.div);
         return r;
@@ -136,7 +136,7 @@ var EntityLayout = (function () {
         var _this = this;
         this.reset();
         this.rows = object.rows.map(function (r) {
-            var row = new layoutRow_1.LayoutRow(_this);
+            var row = new layoutrow_1.LayoutRow(_this);
             row.clear();
             row.parser(r);
             _this.div_container.appendChild(row.div);
@@ -169,7 +169,7 @@ exports.EntityLayout = EntityLayout;
 
 
 
-},{"./layoutRow":3}],2:[function(require,module,exports){
+},{"./layoutrow":3}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var LayoutColumn = (function () {
@@ -279,7 +279,7 @@ exports.LayoutColumn = LayoutColumn;
 },{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var layoutColumn_1 = require("./layoutColumn");
+var layoutcolumn_1 = require("./layoutcolumn");
 var LayoutRow = (function () {
     function LayoutRow(el) {
         var self = this;
@@ -325,7 +325,7 @@ var LayoutRow = (function () {
         return this.columns;
     };
     LayoutRow.prototype.addColumn = function () {
-        var c = new layoutColumn_1.LayoutColumn(this.el, this);
+        var c = new layoutcolumn_1.LayoutColumn(this.el, this);
         this.columns.push(c);
         this.div.appendChild(c.div);
         return c;
@@ -365,7 +365,7 @@ var LayoutRow = (function () {
     LayoutRow.prototype.parser = function (object) {
         var _this = this;
         this.columns = object.columns.map(function (c) {
-            var col = new layoutColumn_1.LayoutColumn(_this.el, _this);
+            var col = new layoutcolumn_1.LayoutColumn(_this.el, _this);
             col.parser(c);
             _this.div.appendChild(col.div);
             return col;
@@ -377,5 +377,5 @@ exports.LayoutRow = LayoutRow;
 
 
 
-},{"./layoutColumn":2}]},{},[1])(1)
+},{"./layoutcolumn":2}]},{},[1])(1)
 });

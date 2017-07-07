@@ -1,5 +1,5 @@
-import { LayoutColumn } from "./layoutColumn";
-import { EntityLayout } from "./entityLayout";
+import { LayoutColumn } from "./layoutcolumn";
+import { EntityLayout } from "./entitylayout";
 import { ILayoutRow } from "./interfaces/ILayoutRow";
 export declare class LayoutRow {
     columns: Array<LayoutColumn>;
