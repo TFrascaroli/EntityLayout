@@ -19,8 +19,54 @@
         </div>
 
         <script type="text/javascript">
-            var el = new entitylayout.EntityLayout();
+            // numero de columnes maximes
+            var maxColumns = 4;
+            var el = new entitylayout.EntityLayout(maxColumns);
 
+            var entity1 = {id: "Option A", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+            var entity2 = {id: "Option B", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+            var entity3 = {id: "Option C", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+            var entity4 = {id: "Option D", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+            var entity5 = {id: "Option E", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+            var entity6 = {id: "Option F", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+            var entity7 = {id: "Option G", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+            var entity8 = {id: "Option H", render: function () {
+                var d = document.createElement("div");
+                d.textContent = this.id;
+                return d;
+            }};
+
+            el.addEntities([entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
+
+            
             var row1 = el.addRow();
             var row2 = el.addRow();
             var row3 = el.addRow();
@@ -30,7 +76,31 @@
             row4.addColumn();
             var container = document.getElementById("container");
             container.appendChild(el.div);
-            
+
+            var config;
+
+            function Serialitzer() {
+                config = el.serializer();
+            }
+
+            function load() {
+                // document.getElementById("container");
+                el.addEntities([entity1, entity2, entity3, entity4, entity5, entity6, entity7, entity8]);
+                el.parser(config);
+                
+            }
+
+            function reset(){
+                el.clear();
+            }
+
         </script>
+        <button type="button" onclick="Serialitzer()">Guardar config</button>
+        <button type="button" onclick="reset()">Reset</button>
+        <button type="button" onclick="load()">Cargar Config</button>
+        
+        <script>
+            
+            </script>
     </body>
 </html>

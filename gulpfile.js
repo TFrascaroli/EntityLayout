@@ -15,6 +15,7 @@ var browserify  = require("browserify"),
     rename      = require('gulp-rename'),
     merge       = require('merge-stream'),
     cssmin      = require('gulp-cssmin'),
+    dts 		= require('dts-bundle').bundle,
     util        = require('gulp-util');
 
 var tsProject = ts.createProject("tsconfig.json");
@@ -22,13 +23,20 @@ var tsTestProject = ts.createProject("tsconfig.json");
 
 gulp.task("build-app", function() {
     return gulp.src([
-            "src/**/**.ts",
-            "typings/main.d.ts/"
+            "src/**/**.ts"
         ])
-        .pipe(sourcemaps.init())
-        .pipe(tsProject())
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest("src/"));
+        .pipe(tsProject()).pipe(gulp.dest('./obj/'));
+});
+
+gulp.task('definitions', ['build-app'], function(done) {
+    dts({
+        name: 'entitylayout',
+        baseDir: 'obj/',
+        main: './obj/entitylayout.d.ts',
+        out: '../dist/entitylayout.d.ts',
+        verbose: true
+    });
+    done();
 });
 
 // Lint Task
@@ -47,7 +55,7 @@ gulp.task("lint", function() {
 gulp.task("bundle", ["build-app"], function() {
 
     var libraryName = "entitylayout";
-    var mainTsFilePath = "src/entitylayout.js";
+    var mainTsFilePath = "obj/entitylayout.js";
     var outputFolder   = "dist/";
     var outputFileName = "entitylayout.js";
     var outputFileNameMin = "entitylayout.min.js";
@@ -95,4 +103,4 @@ gulp.task('watch', function() {
 });
 
 // Default Task
-gulp.task('default', ["lint", "bundle", "less", "watch"]);
+gulp.task('default', ["lint", "bundle", "less"]);

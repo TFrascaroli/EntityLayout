@@ -1,23 +1,29 @@
-import {LayoutRow} from "./layoutRow";
-import {IEntity} from "./IEntity";
+import {LayoutRow} from "./layoutrow";
+import {IEntity} from "./interfaces/IEntity";
 import {Entity} from "./entity";
-import {LayoutColumn} from "./layoutColumn";
+import {LayoutColumn} from "./layoutcolumn";
+import {IEntityLayout} from "./interfaces/IEntityLayout";
+
 
 export class EntityLayout {
 
     private availableEntities: Array<Entity>;
-    private rows: Array<LayoutRow>;
+    public rows: Array<LayoutRow>;
     private currentColumn: LayoutColumn;
     private popup: HTMLDivElement;
     private popupSelectArea: HTMLDivElement;
     private div: HTMLDivElement;
     private div_container: HTMLDivElement;
+    private numberColumns: number;
+    private copyAvailableEntities: Array<Entity>;
 
-    constructor() {
+    constructor(numberColumns: number) {
         let self = this;
         this.availableEntities = [];
+        this.copyAvailableEntities = [];
         this.rows = [];
         this.currentColumn = null;
+        this.numberColumns = numberColumns;
         this.div = document.createElement("div");
         this.div.className = "entity-layout";
         this.div_container = document.createElement("div");
@@ -31,7 +37,7 @@ export class EntityLayout {
               self.addRow();
         });
         this.div_container.appendChild(add_row_btn);
-        
+
         this.popup = document.createElement("div");
         this.popup.classList.add("EL-popup");
         let popupLayer = document.createElement("div");
@@ -56,7 +62,6 @@ export class EntityLayout {
     openPopup(col: LayoutColumn) {
         let self = this;
         this.currentColumn = col;
-
         if (this.currentColumn.getEntity()) {
             let ent = this.currentColumn.getEntity();
             this.availableEntities.push(ent);
@@ -71,19 +76,20 @@ export class EntityLayout {
                 self.popup.classList.remove("visible");
             });
             this.popupSelectArea.appendChild(popupOption);
-        this.availableEntities.forEach( ent =>{
-            let popupOption = document.createElement("div");
-            popupOption.className = "options-entity";
-            popupOption.textContent = ent.id;
-            popupOption.addEventListener("click", function () {
-                if (self.currentColumn !== null) {
-                    self.currentColumn.setEntity(ent);
-                    self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
-                }
-                self.popup.classList.remove("visible");
+            this.availableEntities.forEach( ent =>{
+                let popupOption = document.createElement("div");
+                popupOption.className = "options-entity";
+                popupOption.textContent = ent.id;
+                popupOption.addEventListener("click", function () {
+                    if (self.currentColumn !== null) {
+                        self.currentColumn.setEntity(ent);
+                        self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
+                        self.copyAvailableEntities.push(ent);
+                    }
+                    self.popup.classList.remove("visible");
+                });
+                this.popupSelectArea.appendChild(popupOption);
             });
-            this.popupSelectArea.appendChild(popupOption);
-        });
         this.popup.classList.add("visible");
     }
 
@@ -105,15 +111,13 @@ export class EntityLayout {
         self.availableEntities = ents;
     }
     addRow(){
+
         let r = new LayoutRow(this);
         this.rows.push(r);
         this.div_container.appendChild(r.div);
         return r;
     }
-    clear() {
-        this.availableEntities = [];
-        this.rows = [];
-    }
+
     render() {
         let div_rows = document.createElement("div");
         div_rows.style.width = "21cm";
@@ -123,7 +127,67 @@ export class EntityLayout {
            div_rows.appendChild(r.render());
         });
         // Cambiar!!
-        return "<html><head><style type=\"text/css\"><\/style><\/head><body>" + div_rows.outerHTML + "<\/body><\/html>";
+        return div_rows.outerHTML;
 
     };
+
+    serializer(): IEntityLayout {
+        return {
+            rows: this.rows.map(r => {
+                return r.serializer();
+            })
+        }
+    }
+
+    reset() {
+        let self = this;
+        this.rows.forEach(function (r) {
+            self.div_container.removeChild(r.div);
+            r.clear();
+        });
+        this.rows = [];
+    }
+    
+    clear() {
+        this.reset();
+        this.availableEntities = [];
+        this.copyAvailableEntities = [];
+        this.addRow();
+    }
+
+    parser(object: IEntityLayout) {
+        this.reset();
+        this.rows = object.rows.map(r => {
+            let row = new LayoutRow(this);
+            row.clear();
+            row.parser(r);
+            this.div_container.appendChild(row.div);
+            return row;
+        });
+    }
+
+    getEntities() {
+        return this.availableEntities;
+    }
+
+    getNumberColumns(){
+        return this.numberColumns;
+    }
+
+    assignEntity(id: string, col: LayoutColumn) {
+        if (id) {
+            let ent = this.availableEntities.filter(e => {return e.id === id})[0];
+            col.setEntity(ent);
+            this.availableEntities.splice(this.availableEntities.indexOf(ent), 1);
+            this.copyAvailableEntities.push(ent);
+        }
+    }
+
+    getUI(): HTMLDivElement {
+        return this.div;
+    }
+
+    get_entity(){
+        return this.copyAvailableEntities;
+    }
 }
