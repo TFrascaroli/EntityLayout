@@ -74,6 +74,7 @@ export class LayoutRow {
         this.columns.forEach(c => {
             div_row.appendChild(c.render());
         });
+        if (this.el.afterRender instanceof Function) this.el.afterRender("row", div_row);
         return div_row;
     };
 

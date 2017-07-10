@@ -93,6 +93,7 @@ export class LayoutColumn {
             div_inner.appendChild(this.ent.render());
         }
         div_rep.style.flex = this.dim.toString() + " " + this.dim.toString() + " " +  "auto";
+        if (this.el.afterRender instanceof Function) this.el.afterRender("column", div_rep);
         return div_rep;
     };
 

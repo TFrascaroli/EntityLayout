@@ -16,13 +16,14 @@ export class EntityLayout {
     private div: HTMLDivElement;
     private div_container: HTMLDivElement;
     private numberColumns: number;
+    public afterRender: Function
 
-    constructor(numberColumns: number) {
+    constructor(maxColumns: number) {
         let self = this;
         this.availableEntities = [];
         this.rows = [];
         this.currentColumn = null;
-        this.numberColumns = numberColumns;
+        this.numberColumns = maxColumns;
         this.div = document.createElement("div");
         this.div.className = "entity-layout";
         this.div_container = document.createElement("div");

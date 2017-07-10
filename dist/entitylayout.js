@@ -4,12 +4,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var layoutrow_1 = require("./layoutrow");
 var entitylayoutinlinecss_1 = require("./entitylayoutinlinecss");
 var EntityLayout = (function () {
-    function EntityLayout(numberColumns) {
+    function EntityLayout(maxColumns) {
         var self = this;
         this.availableEntities = [];
         this.rows = [];
         this.currentColumn = null;
-        this.numberColumns = numberColumns;
+        this.numberColumns = maxColumns;
         this.div = document.createElement("div");
         this.div.className = "entity-layout";
         this.div_container = document.createElement("div");
@@ -256,6 +256,8 @@ var LayoutColumn = (function () {
             div_inner.appendChild(this.ent.render());
         }
         div_rep.style.flex = this.dim.toString() + " " + this.dim.toString() + " " + "auto";
+        if (this.el.afterRender instanceof Function)
+            this.el.afterRender("column", div_rep);
         return div_rep;
     };
     ;
@@ -349,6 +351,8 @@ var LayoutRow = (function () {
         this.columns.forEach(function (c) {
             div_row.appendChild(c.render());
         });
+        if (this.el.afterRender instanceof Function)
+            this.el.afterRender("row", div_row);
         return div_row;
     };
     ;
