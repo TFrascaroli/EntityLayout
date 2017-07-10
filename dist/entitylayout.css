@@ -1,6 +1,5 @@
 .entity-layout {
-  height: 100%;
-  width: 100%;
+  height: calc(100% - 10px);
   padding: 0 5px;
   overflow: auto;
   background-color: rgba(200, 200, 200, 0.3);
@@ -117,7 +116,6 @@
   opacity: 1;
 }
 .entity-layout .content-rows {
-  width: 100%;
   position: relative;
 }
 .entity-layout .button-add-row {
