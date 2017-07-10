@@ -119,12 +119,7 @@ var EntityLayout = (function () {
         this.rows.forEach(function (r) {
             div_rows.appendChild(r.render());
         });
-<<<<<<< HEAD
-        // Cambiar!!
-        return div_rows.outerHTML;
-=======
         return style.outerHTML + div_rows.outerHTML;
->>>>>>> fe66b673541e2bcdce73ac04a19392d95d1fcbdb
     };
     ;
     EntityLayout.prototype.serializer = function () {
@@ -261,11 +256,8 @@ var LayoutColumn = (function () {
             div_inner.appendChild(this.ent.render());
         }
         div_rep.style.flex = this.dim.toString() + " " + this.dim.toString() + " " + "auto";
-<<<<<<< HEAD
-=======
         if (this.el.afterRender instanceof Function)
             this.el.afterRender("column", div_rep);
->>>>>>> fe66b673541e2bcdce73ac04a19392d95d1fcbdb
         return div_rep;
     };
     ;
