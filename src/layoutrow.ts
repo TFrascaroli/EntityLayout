@@ -36,15 +36,10 @@ export class LayoutRow {
         remove_row_btn.className = "button-remove-row";
         remove_row_btn.addEventListener("click",function(){
             let columns = self.getColumn();
-            columns.forEach(c =>{
-                if (c.getEntity()) {
-                    el.getEntities().push(c.getEntity());
-                    
-                }
-            })
             self.div.remove();
             self.el.rows.splice(self.el.rows.indexOf(self), 1);
             remove_row_btn.remove();
+            if (self.el.rows.length === 0) self.el.addRow();
         });
         this.div.appendChild(remove_row_btn);
         this.columns = new Array<LayoutColumn>();
@@ -79,6 +74,7 @@ export class LayoutRow {
         this.columns.forEach(c => {
             div_row.appendChild(c.render());
         });
+        if (this.el.afterRender instanceof Function) this.el.afterRender("row", div_row);
         return div_row;
     };
 

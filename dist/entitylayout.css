@@ -1,5 +1,9 @@
 .entity-layout {
   height: calc(100% - 10px);
+<<<<<<< HEAD
+=======
+  width: calc(100% - 10px);
+>>>>>>> fe66b673541e2bcdce73ac04a19392d95d1fcbdb
   padding: 0 5px;
   overflow: auto;
   background-color: rgba(200, 200, 200, 0.3);

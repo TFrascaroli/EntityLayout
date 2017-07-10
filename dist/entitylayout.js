@@ -2,14 +2,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var layoutrow_1 = require("./layoutrow");
+var entitylayoutinlinecss_1 = require("./entitylayoutinlinecss");
 var EntityLayout = (function () {
-    function EntityLayout(numberColumns) {
+    function EntityLayout(maxColumns) {
         var self = this;
         this.availableEntities = [];
-        this.copyAvailableEntities = [];
         this.rows = [];
         this.currentColumn = null;
-        this.numberColumns = numberColumns;
+        this.numberColumns = maxColumns;
         this.div = document.createElement("div");
         this.div.className = "entity-layout";
         this.div_container = document.createElement("div");
@@ -42,14 +42,25 @@ var EntityLayout = (function () {
         popupContent.appendChild(this.popupSelectArea);
         document.body.appendChild(this.popup);
     }
+    EntityLayout.prototype.getUsedEntities = function (col) {
+        var ents = [];
+        this.rows.forEach(function (r) {
+            r.columns.forEach(function (c) {
+                var ent = c.getEntity();
+                if (ent !== null && c !== col)
+                    ents.push(ent);
+            });
+        });
+        return ents;
+    };
     EntityLayout.prototype.openPopup = function (col) {
         var _this = this;
         var self = this;
         this.currentColumn = col;
-        if (this.currentColumn.getEntity()) {
-            var ent = this.currentColumn.getEntity();
-            this.availableEntities.push(ent);
-        }
+        var usedEnts = this.getUsedEntities(this.currentColumn);
+        var ents = this.availableEntities.filter(function (e) {
+            return usedEnts.indexOf(e) === -1;
+        });
         this.popupSelectArea.innerHTML = "";
         var popupOption = document.createElement("div");
         popupOption.className = "options-entity";
@@ -60,15 +71,13 @@ var EntityLayout = (function () {
             self.popup.classList.remove("visible");
         });
         this.popupSelectArea.appendChild(popupOption);
-        this.availableEntities.forEach(function (ent) {
+        ents.forEach(function (ent) {
             var popupOption = document.createElement("div");
             popupOption.className = "options-entity";
             popupOption.textContent = ent.id;
             popupOption.addEventListener("click", function () {
                 if (self.currentColumn !== null) {
                     self.currentColumn.setEntity(ent);
-                    self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
-                    self.copyAvailableEntities.push(ent);
                 }
                 self.popup.classList.remove("visible");
             });
@@ -101,14 +110,21 @@ var EntityLayout = (function () {
     };
     EntityLayout.prototype.render = function () {
         var div_rows = document.createElement("div");
+        var style = document.createElement("style");
+        style.type = "text/css";
+        style.innerText = entitylayoutinlinecss_1.inlineCss;
         div_rows.style.width = "21cm";
         div_rows.style.padding = "1cm";
         div_rows.style.backgroundColor = "#bebebe";
         this.rows.forEach(function (r) {
             div_rows.appendChild(r.render());
         });
+<<<<<<< HEAD
         // Cambiar!!
         return div_rows.outerHTML;
+=======
+        return style.outerHTML + div_rows.outerHTML;
+>>>>>>> fe66b673541e2bcdce73ac04a19392d95d1fcbdb
     };
     ;
     EntityLayout.prototype.serializer = function () {
@@ -129,7 +145,6 @@ var EntityLayout = (function () {
     EntityLayout.prototype.clear = function () {
         this.reset();
         this.availableEntities = [];
-        this.copyAvailableEntities = [];
         this.addRow();
     };
     EntityLayout.prototype.parser = function (object) {
@@ -153,27 +168,28 @@ var EntityLayout = (function () {
         if (id) {
             var ent = this.availableEntities.filter(function (e) { return e.id === id; })[0];
             col.setEntity(ent);
-            this.availableEntities.splice(this.availableEntities.indexOf(ent), 1);
-            this.copyAvailableEntities.push(ent);
         }
     };
     EntityLayout.prototype.getUI = function () {
         return this.div;
     };
-    EntityLayout.prototype.get_entity = function () {
-        return this.copyAvailableEntities;
-    };
     return EntityLayout;
 }());
 exports.EntityLayout = EntityLayout;
 
-},{"./layoutrow":3}],2:[function(require,module,exports){
+},{"./entitylayoutinlinecss":2,"./layoutrow":4}],2:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.inlineCss = ".flexRoot{width:calc(100% + 16px);height:calc(100% + 16px);background-color:#dedede}.columnParent,.rowParent{display:-webkit-box;display:-ms-flexbox;display:-webkit-flex;display:flex;-webkit-box-direction:normal;-webkit-box-orient:horizontal;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-flex-wrap:nowrap;-ms-flex-wrap:nowrap;flex-wrap:nowrap;-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start;-ms-flex-line-pack:stretch;align-content:stretch;-webkit-box-align:stretch;-ms-flex-align:stretch;align-items:stretch;max-height:100%;max-width:100%}.columnParent{-webkit-box-orient:vertical;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column}.flexChild{-ms-flex-item-align:auto;align-self:auto;position:relative!important;bottom:auto!important;top:auto!important;overflow:hidden}.sledge-hammer-inner{position:absolute}.button_export{width:20px;height:20px}";
+
+},{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var LayoutColumn = (function () {
     function LayoutColumn(el, row) {
         var self = this;
         this.row = row;
+        this.ent = null;
         this.div = document.createElement("div");
         this.div_content = document.createElement("div");
         this.div_content.className = "content-column";
@@ -238,13 +254,18 @@ var LayoutColumn = (function () {
     LayoutColumn.prototype.render = function () {
         var div_rep = document.createElement("div");
         var div_inner = document.createElement("div");
-        div_inner.classList.add("sledge-hammer-inner");
-        div_rep.className = "flexChild sledge-hammer";
+        div_inner.classList.add("entity-layout-inner");
+        div_rep.className = "flexChild entity-layout-child";
         div_rep.appendChild(div_inner);
         if (this.ent) {
             div_inner.appendChild(this.ent.render());
         }
         div_rep.style.flex = this.dim.toString() + " " + this.dim.toString() + " " + "auto";
+<<<<<<< HEAD
+=======
+        if (this.el.afterRender instanceof Function)
+            this.el.afterRender("column", div_rep);
+>>>>>>> fe66b673541e2bcdce73ac04a19392d95d1fcbdb
         return div_rep;
     };
     ;
@@ -273,7 +294,7 @@ var LayoutColumn = (function () {
 }());
 exports.LayoutColumn = LayoutColumn;
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var layoutcolumn_1 = require("./layoutcolumn");
@@ -303,14 +324,11 @@ var LayoutRow = (function () {
         remove_row_btn.className = "button-remove-row";
         remove_row_btn.addEventListener("click", function () {
             var columns = self.getColumn();
-            columns.forEach(function (c) {
-                if (c.getEntity()) {
-                    el.getEntities().push(c.getEntity());
-                }
-            });
             self.div.remove();
             self.el.rows.splice(self.el.rows.indexOf(self), 1);
             remove_row_btn.remove();
+            if (self.el.rows.length === 0)
+                self.el.addRow();
         });
         this.div.appendChild(remove_row_btn);
         this.columns = new Array();
@@ -341,6 +359,8 @@ var LayoutRow = (function () {
         this.columns.forEach(function (c) {
             div_row.appendChild(c.render());
         });
+        if (this.el.afterRender instanceof Function)
+            this.el.afterRender("row", div_row);
         return div_row;
     };
     ;
@@ -372,5 +392,5 @@ var LayoutRow = (function () {
 }());
 exports.LayoutRow = LayoutRow;
 
-},{"./layoutcolumn":2}]},{},[1])(1)
+},{"./layoutcolumn":3}]},{},[1])(1)
 });

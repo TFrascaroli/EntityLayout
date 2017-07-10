@@ -20,7 +20,7 @@ declare module 'entitylayout' {
         getNumberColumns(): number;
         assignEntity(id: string, col: LayoutColumn): void;
         getUI(): HTMLDivElement;
-        get_entity(): Entity[];
+        afterRender: Function;
     }
 }
 

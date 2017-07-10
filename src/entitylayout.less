@@ -1,10 +1,17 @@
 @color_1: #bebeba;
 @color_2: rgba(200, 200, 200, 0.3);
+@general-padding:       5px;
 
 .entity-layout {
+<<<<<<< HEAD
 	height: calc(100% ~"-" 10px);
 	width: calc(100% ~"-" 10px);
 	padding: 0 5px;
+=======
+	height: calc(100% ~"-" 2 * @general-padding);
+	width: calc(100% ~"-" 2 * @general-padding);
+	padding: 0 @general-padding;
+>>>>>>> fe66b673541e2bcdce73ac04a19392d95d1fcbdb
     overflow: auto;
     background-color: @color_2;
 	.row {
