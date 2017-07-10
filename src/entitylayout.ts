@@ -1,6 +1,7 @@
 import {LayoutRow} from "./layoutrow";
 import {IEntity} from "./interfaces/IEntity";
 import {Entity} from "./entity";
+import {inlineCss} from "./entitylayoutinlinecss";
 import {LayoutColumn} from "./layoutcolumn";
 import {IEntityLayout} from "./interfaces/IEntityLayout";
 
@@ -15,12 +16,10 @@ export class EntityLayout {
     private div: HTMLDivElement;
     private div_container: HTMLDivElement;
     private numberColumns: number;
-    private copyAvailableEntities: Array<Entity>;
 
     constructor(numberColumns: number) {
         let self = this;
         this.availableEntities = [];
-        this.copyAvailableEntities = [];
         this.rows = [];
         this.currentColumn = null;
         this.numberColumns = numberColumns;
@@ -59,13 +58,24 @@ export class EntityLayout {
         document.body.appendChild(this.popup);
     }
 
+    getUsedEntities (col?: LayoutColumn): Entity[] {
+        let ents: Entity[] = [];
+        this.rows.forEach(r => {
+            r.columns.forEach(c => {
+                let ent = c.getEntity();
+                if (ent !== null && c !== col) ents.push(ent);
+            });
+        });
+        return ents;
+    }
+
     openPopup(col: LayoutColumn) {
         let self = this;
         this.currentColumn = col;
-        if (this.currentColumn.getEntity()) {
-            let ent = this.currentColumn.getEntity();
-            this.availableEntities.push(ent);
-        }
+        let usedEnts = this.getUsedEntities(this.currentColumn);
+        let ents = this.availableEntities.filter(e => {
+            return usedEnts.indexOf(e) === -1;
+        });
         this.popupSelectArea.innerHTML = "";
         let popupOption = document.createElement("div");
             popupOption.className = "options-entity";
@@ -76,15 +86,13 @@ export class EntityLayout {
                 self.popup.classList.remove("visible");
             });
             this.popupSelectArea.appendChild(popupOption);
-            this.availableEntities.forEach( ent =>{
+            ents.forEach( ent =>{
                 let popupOption = document.createElement("div");
                 popupOption.className = "options-entity";
                 popupOption.textContent = ent.id;
                 popupOption.addEventListener("click", function () {
                     if (self.currentColumn !== null) {
                         self.currentColumn.setEntity(ent);
-                        self.availableEntities.splice(self.availableEntities.indexOf(ent), 1);
-                        self.copyAvailableEntities.push(ent);
                     }
                     self.popup.classList.remove("visible");
                 });
@@ -120,14 +128,16 @@ export class EntityLayout {
 
     render() {
         let div_rows = document.createElement("div");
+        let style = document.createElement("style");
+        style.type="text/css";
+        style.innerText = inlineCss;
         div_rows.style.width = "21cm";
         div_rows.style.padding = "1cm";
         div_rows.style.backgroundColor = "#bebebe";
         this.rows.forEach(r => {
            div_rows.appendChild(r.render());
         });
-        // Cambiar!!
-        return div_rows.outerHTML;
+        return style.outerHTML + div_rows.outerHTML;
 
     };
 
@@ -151,7 +161,6 @@ export class EntityLayout {
     clear() {
         this.reset();
         this.availableEntities = [];
-        this.copyAvailableEntities = [];
         this.addRow();
     }
 
@@ -178,16 +187,10 @@ export class EntityLayout {
         if (id) {
             let ent = this.availableEntities.filter(e => {return e.id === id})[0];
             col.setEntity(ent);
-            this.availableEntities.splice(this.availableEntities.indexOf(ent), 1);
-            this.copyAvailableEntities.push(ent);
         }
     }
 
     getUI(): HTMLDivElement {
         return this.div;
-    }
-
-    get_entity(){
-        return this.copyAvailableEntities;
     }
 }

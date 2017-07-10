@@ -15,6 +15,7 @@ export class LayoutColumn {
     constructor(el: EntityLayout, row: LayoutRow) {
         let self = this;
         this.row = row;
+        this.ent = null;
         this.div = document.createElement("div");
         this.div_content = document.createElement("div");
         this.div_content.className = "content-column";
@@ -85,8 +86,8 @@ export class LayoutColumn {
     render(): HTMLDivElement {
         let div_rep = document.createElement("div");
         let div_inner = document.createElement("div");
-        div_inner.classList.add("sledge-hammer-inner");
-        div_rep.className = "flexChild sledge-hammer";
+        div_inner.classList.add("entity-layout-inner");
+        div_rep.className = "flexChild entity-layout-child";
         div_rep.appendChild(div_inner);
         if (this.ent) {
             div_inner.appendChild(this.ent.render());
